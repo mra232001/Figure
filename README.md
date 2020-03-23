@@ -3,7 +3,7 @@
 ## Description
 
 Given: class `Point`, abstract class `Figure`, 
-skeletons of classes `Triangle`, `Quadrilateral`, `Circle`.
+skeletons of classes `Triangle`, `Quadrilateral`, `Circle`, ComparatorsCollection.
 
 Make `Triangle`, `Quadrilateral`, `Circle` extend `Figure` class.
 
@@ -223,5 +223,25 @@ class Quadrilateral {
 //TODO
 class Circle {
     
+}
+```
+
+```java
+class ComparatorsCollection {
+
+    //TODO
+    public static int compareByArea(Figure lhs, Figure rhs){
+        return 0;
+    }
+
+    //TODO
+    public static int compareByHorizontalStartPosition(Figure lhs, Figure rhs){
+        return 0;
+    }
+
+    //TODO
+    public static int compareByHorizontalCenterPosition(Figure lhs, Figure rhs){
+        return 0;
+    }
 }
 ```
