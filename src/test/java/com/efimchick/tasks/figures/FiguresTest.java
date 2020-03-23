@@ -3,17 +3,178 @@ package com.efimchick.tasks.figures;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
 import static java.lang.Math.sqrt;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-public class QuadrilateralTest {
+public class FiguresTest {
+
+    @Test
+    public void testCircleConstructor() {
+        new Circle(new Point(0, 0), 1);
+        new Circle(new Point(1, 3), 1);
+        new Circle(new Point(-23.5, 236), 56);
+        new Circle(new Point(-28.5, -2), 0.001);
+        new Circle(new Point(56, -87), 11.1235);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCircleConstructorZeroRadius() {
+        new Circle(new Point(0, 0), 0);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCircleConstructorNegativeRadius() {
+        new Circle(new Point(5, -6), -23);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCircleConstructorNullCenter() {
+        new Circle(null, 23);
+    }
+
+    @Test
+    public void testCircleArea() {
+        assertEquals(3.14159265358979323846, new Circle(new Point(0, 0), 1).area(), 0.000001);
+        assertEquals(3.14159265358979323846, new Circle(new Point(1, 3), 1).area(), 0.000001);
+        assertEquals(9852.03456165759, new Circle(new Point(-23.5, 236), 56).area(), 0.000001);
+        assertEquals(0.00000314159265358979323846, new Circle(new Point(-28.5, -2), 0.001).area(), 0.000001);
+        assertEquals(388.71633468071917, new Circle(new Point(56, -87), 11.1235).area(), 0.000001);
+    }
+
+    @Test
+    public void testCircleCentroid() {
+        assertEquals(0, new Circle(new Point(0, 0), 1).centroid().getX(), 0.0001);
+        assertEquals(0, new Circle(new Point(0, 0), 1).centroid().getY(), 0.0001);
+        assertEquals(1, new Circle(new Point(1, 3), 1).centroid().getX(), 0.0001);
+        assertEquals(3, new Circle(new Point(1, 3), 1).centroid().getY(), 0.0001);
+        assertEquals(-23.5, new Circle(new Point(-23.5, 236), 56).centroid().getX(), 0.0001);
+        assertEquals(236, new Circle(new Point(-23.5, 236), 56).centroid().getY(), 0.0001);
+        assertEquals(-28.5, new Circle(new Point(-28.5, -2), 0.001).centroid().getX(), 0.0001);
+        assertEquals(-2, new Circle(new Point(-28.5, -2), 0.001).centroid().getY(), 0.0001);
+        assertEquals(56, new Circle(new Point(56, -87), 11.1235).centroid().getX(), 0.0001);
+        assertEquals(-87, new Circle(new Point(56, -87), 11.1235).centroid().getY(), 0.0001);
+    }
+
+
+    @Test
+    public void testCircleToString() {
+        assertEquals("Circle[(0.0,0.0)1.0]", new Circle(new Point(0, 0), 1).toString());
+        assertEquals("Circle[(1.0,3.0)1.0]", new Circle(new Point(1, 3), 1).toString());
+        assertEquals("Circle[(-23.5,236.0)56.0]", new Circle(new Point(-23.5, 236), 56).toString());
+        assertEquals("Circle[(-28.5,-2.0)0.001]", new Circle(new Point(-28.5, -2), 0.001).toString());
+        assertEquals("Circle[(56.0,-87.0)11.1235]", new Circle(new Point(56, -87), 11.1235).toString());
+    }
+
+    @Test
+    public void testCircleisTheSame() {
+        assertTrue(new Circle(new Point(0, 0), 1).isTheSame(new Circle(new Point(0, 0), 1)));
+        assertTrue(new Circle(new Point(1 - (1d / 3 * 3), 3 - (30d / 10)), 1).isTheSame(new Circle(new Point(0, 0), 1)));
+        assertTrue(new Circle(new Point(sqrt(2) * sqrt(2), 4 - sqrt(2) * sqrt(2)), sqrt(3) * sqrt(3)).isTheSame(new Circle(new Point(2, 2), 3)));
+
+        assertFalse(new Circle(new Point(sqrt(2) * sqrt(2), 4 - sqrt(2) * sqrt(2)), sqrt(3) * sqrt(3)).isTheSame(new Circle(new Point(2.1, 2), 3)));
+        assertFalse(new Circle(new Point(sqrt(2) * sqrt(2), 4 - sqrt(2) * sqrt(2)), sqrt(3) * sqrt(3)).isTheSame(new Circle(new Point(2, 2), 2.9)));
+        assertFalse(new Circle(new Point(sqrt(2) * sqrt(2), 4 - sqrt(2) * sqrt(2)), sqrt(3) * sqrt(3)).isTheSame(new Circle(new Point(2, -2.0), 3)));
+
+        assertFalse(new Circle(new Point(0, 0), 1).isTheSame(new Triangle(new Point(0, 1), new Point(1, 1), new Point(1, 0))));
+        assertFalse(new Circle(new Point(0, 0), 1).isTheSame(new Quadrilateral(new Point(0, 1), new Point(1, 1), new Point(1, 0), new Point(0, 0))));
+    }
+
+
+
+    private List<Figure> figures;
+    private Circle c1;
+    private Circle c2;
+    private Circle c3;
+    private Triangle t1;
+    private Triangle t2;
+    private Triangle t3;
+    private Quadrilateral q1;
+    private Quadrilateral q2;
+    private Quadrilateral q3;
+
+    public void setup() {
+        c1 = new Circle(new Point(0, 9), 7);
+        c2 = new Circle(new Point(1, 9), 10);
+        c3 = new Circle(new Point(-1, 9), 9.5);
+        t1 = new Triangle(new Point(0, 20), new Point(20, 0), new Point(-20, 0));
+        t2 = new Triangle(new Point(-15, 0), new Point(-10, 20), new Point(-5, 0));
+        t3 = new Triangle(new Point(-14, 0), new Point(-10, 10), new Point(-5, 0));
+        q1 = new Quadrilateral(new Point(-30, -30), new Point(-30, 30), new Point(30, 30), new Point(30, -30));
+        q2 = new Quadrilateral(new Point(-20, -100), new Point(-20, 100), new Point(30, 30), new Point(30, -30));
+        q3 = new Quadrilateral(new Point(-10, -10), new Point(-10, 10), new Point(10, 30), new Point(30, -10));
+
+
+        figures = Arrays.asList(c1, c2, c3, t1, t2, t3, q1, q2, q3);
+    }
+
+    @Test
+    public void compareByArea() {
+
+        setup();
+
+        final Comparator<Figure> comparator = ComparatorsCollection::compareByArea;
+
+        testCaseMin(t3, Figure.class, comparator);
+        testCaseMax(q2, Figure.class, comparator);
+        testCaseMin(c1, Circle.class, comparator);
+        testCaseMax(c2, Circle.class, comparator);
+        testCaseMin(t3, Triangle.class, comparator);
+        testCaseMax(t1, Triangle.class, comparator);
+        testCaseMin(q3, Quadrilateral.class, comparator);
+        testCaseMax(q2, Quadrilateral.class, comparator);
+    }
+
+    @Test
+    public void compareByHorizontalStartPosition() {
+
+        setup();
+
+        final Comparator<Figure> comparator = ComparatorsCollection::compareByHorizontalStartPosition;
+
+        testCaseMin(t2, Figure.class, comparator);
+        testCaseMax(q3, Figure.class, comparator);
+        testCaseMin(c3, Circle.class, comparator);
+        testCaseMax(c2, Circle.class, comparator);
+        testCaseMin(t2, Triangle.class, comparator);
+        testCaseMax(t1, Triangle.class, comparator);
+        testCaseMin(q1, Quadrilateral.class, comparator);
+        testCaseMax(q3, Quadrilateral.class, comparator);
+    }
+
+    @Test
+    public void compareByHorizontalCenterPosition() {
+
+        setup();
+
+        final Comparator<Figure> comparator = ComparatorsCollection::compareByHorizontalCenterPosition;
+
+        testCaseMin(q1, Figure.class, comparator);
+        testCaseMax(c1, Figure.class, comparator);
+        testCaseMin(c3, Circle.class, comparator);
+        testCaseMax(c1, Circle.class, comparator);
+        testCaseMin(t1, Triangle.class, comparator);
+        testCaseMax(t3, Triangle.class, comparator);
+        testCaseMin(q1, Quadrilateral.class, comparator);
+        testCaseMax(q3, Quadrilateral.class, comparator);
+    }
+
+    private <T extends Figure> void testCaseMin(final T expected, final Class<T> figureClass, final Comparator<Figure> comparator) {
+        assertSame(expected, figures.stream().filter(figureClass::isInstance).min(comparator).get());
+    }
+
+    private <T extends Figure> void testCaseMax(final T expected, final Class<T> figureClass, final Comparator<Figure> comparator) {
+        assertSame(expected, figures.stream().filter(figureClass::isInstance).max(comparator).get());
+    }
+
+
 
     private static final List<Point> P1 = Arrays.asList(
             new Point(1, 1),
@@ -41,73 +202,73 @@ public class QuadrilateralTest {
     );
 
     @Test
-    public void testConstructor() {
+    public void testQuadConstructor() {
         q(0, 0, 0, 1, 1, 1, 1, 0);
         q(-2, 2, -3, 1, 0, 1, 0, 2);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNullACase() {
+    public void testQuadConstructorNullACase() {
         q(null, new Point(-3, 1), new Point(0, 1), new Point(1, 9));
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNullBCase() {
+    public void testQuadConstructorNullBCase() {
         q(new Point(0, 1), null, new Point(-3, 1), new Point(9, 78));
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNullCCase() {
+    public void testQuadConstructorNullCCase() {
         q(new Point(-3, 1), new Point(0, 1), null, new Point(0, 0));
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNullDCase() {
+    public void testQuadConstructorNullDCase() {
         q(new Point(-3, 1), new Point(0, 1), new Point(0, 0), null);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorDegenerative1() {
+    public void testQuadConstructorDegenerative1() {
         q(-1, -1, 1, 1, 2, 2, 3, -3);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorDegenerative2() {
+    public void testQuadConstructorDegenerative2() {
         q(1, 3, 3, 9, 2, 6, -5, 5);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorDegenerative3() {
+    public void testQuadConstructorDegenerative3() {
         q(0, 0, 0, 2, 0, 5, 1, 1);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorDegenerative4() {
+    public void testQuadConstructorDegenerative4() {
         q(0, 0, 0, 0, 0, 5, 5, 0);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNotPlain1() {
+    public void testQuadConstructorNotPlain1() {
         q(-1, 1, 1, -1, 1, 1, -1, -1);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNotPlain2() {
+    public void testQuadConstructorNotPlain2() {
         q(-1, 1, -1, 0, 1, 0, 1, -1);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNonConvex1() {
+    public void testQuadConstructorNonConvex1() {
         q(0, 0, 0, 10, 1, 1, 10, 0);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testConstructorNonConvex2() {
+    public void testQuadConstructorNonConvex2() {
         q(0, 0, 3, 3, 0, -3, -3, 3);
     }
 
     @Test
-    public void testArea() {
+    public void testQuadArea() {
 
         //<editor-fold desc="expectedAreaFoldedRegion">
         final Iterator<Double> expectedArea = Arrays.asList(
@@ -346,7 +507,7 @@ public class QuadrilateralTest {
     }
 
     @Test
-    public void testCentroid() {
+    public void testQuadCentroid() {
         //<editor-fold desc="expectedCentroidsFoldedRegion">
         final Iterator<Point> expectedCentroids = Arrays.asList(
                 new Point(0.0, -0.0),
@@ -606,7 +767,7 @@ public class QuadrilateralTest {
     }
 
     @Test
-    public void testTheSame() {
+    public void testQuadTheSame() {
 
         Point a = new Point(0, 0);
         Point b = new Point(1, 10);
@@ -654,5 +815,126 @@ public class QuadrilateralTest {
     private Quadrilateral q(final double ax, final double ay, final double bx, final double by, final double cx, final double cy, final double dx, final double dy) {
         return q(new Point(ax, ay), new Point(bx, by), new Point(cx, cy), new Point(dx, dy));
     }
+
+
+
+    @Test
+    public void testTriConstructor() {
+        t(0, 0, 1, 1, 0, 1);
+        t(-2, 2, -3, 1, 0, 1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorNullACase() {
+        new Triangle(null, new Point(-3, 1), new Point(0, 1));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorNullBCase() {
+        new Triangle(new Point(0, 1), null, new Point(-3, 1));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorNullCCase() {
+        new Triangle(new Point(-3, 1), new Point(0, 1), null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorDegenerative1() {
+        t(-1, -1, 1, 1, 2, 2);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorDegenerative2() {
+        t(1, 3, 3, 9, 2, 6);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorDegenerative3() {
+        t(0, 0, 0, 2, 0, 5);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTriConstructorDegenerative4() {
+        t(0, 0, 0, 0, 0, 5);
+    }
+
+    @Test
+    public void testTriArea() {
+        testArea(6.00, 0, 0, 4, 0, 0, 3);
+        testArea(4.50, 0, 1, 0, 4, 3, 0);
+        testArea(18.0, 2, 5, -5, 4, 3, 0);
+        testArea(35.0, 8, 2, 1, 2, -2, -8);
+        testArea(13.0, 4, 5, 2, 5, 3, -8);
+        testArea(24.5, 9, 7, 6, 9, 7, -8);
+        testArea(7.50, 4, 9, 4, 6, 9, -8);
+        testArea(5.00, 6, 3, 7, 3, -3, -7);
+        testArea(3.00, 3, 5, 9, 3, 6, 5);
+        testArea(10.0, 8, 2, 3, 7, 3, 3);
+        testArea(4.00, 7, 7, 4, 0, 5, 5);
+        testArea(15.5, 3, 4, 8, 2, 6, 9);
+    }
+
+    @Test
+    public void testTriCentroid() {
+        testCentroid(0, 0, 4, 0, 0, 3, new Point(1.3333333333333333, 1.0));
+        testCentroid(0, 1, 0, 4, 3, 0, new Point(1.0, 1.6666666666666667));
+        testCentroid(2, 5, -5, 4, 3, 0, new Point(0.0, 3.0));
+        testCentroid(8, 2, 1, 2, -2, -8, new Point(2.3333333333333335, -1.3333333333333333));
+        testCentroid(4, 5, 2, 5, 3, -8, new Point(3.0, 0.6666666666666666));
+        testCentroid(9, 7, 6, 9, 7, -8, new Point(7.333333333333333, 2.6666666666666665));
+        testCentroid(4, 9, 4, 6, 9, -8, new Point(5.666666666666667, 2.3333333333333335));
+        testCentroid(6, 3, 7, 3, -3, -7, new Point(3.3333333333333335, -0.3333333333333333));
+        testCentroid(3, 5, 9, 3, 6, 5, new Point(6.0, 4.333333333333333));
+        testCentroid(8, 2, 3, 7, 3, 3, new Point(4.666666666666667, 4.0));
+        testCentroid(7, 7, 4, 0, 5, 5, new Point(5.333333333333333, 4.0));
+        testCentroid(3, 4, 8, 2, 6, 9, new Point(5.666666666666667, 5.0));
+    }
+
+    @Test
+    public void testTriTheSame() {
+        final Triangle abc = t(0, 0, 1, 10, 19, 2);
+        final Triangle abc_clone = t(0, 0, 1, 10, 19, 2);
+        final Triangle bca = t(1, 10, 19, 2, 0, 0);
+        final Triangle bac = t(1, 10, 0, 0, 19, 2);
+        final Triangle cba = t(19, 2, 1, 10, 0, 0);
+
+        assertTrue(abc.isTheSame(abc_clone));
+        assertTrue(abc.isTheSame(bca));
+        assertTrue(abc.isTheSame(bac));
+        assertTrue(abc.isTheSame(cba));
+
+        assertTrue(abc_clone.isTheSame(abc));
+        assertTrue(bca.isTheSame(abc));
+        assertTrue(bac.isTheSame(abc));
+        assertTrue(cba.isTheSame(abc));
+
+        assertFalse(abc.isTheSame(t(0, 0, 1, 10, 19, 3)));
+        assertFalse(abc.isTheSame(t(0, 0.1, 1, 10, 19, 2)));
+        assertFalse(abc.isTheSame(t(0, 0, 1, -10, 19, 2)));
+
+        assertTrue(abc.isTheSame(t(0, 0, 1, 10, 19, sqrt(2) * sqrt(2))));
+        assertTrue(abc.isTheSame(t(0, 0, 19, sqrt(2) * sqrt(2), 1, 10)));
+
+        assertFalse(abc.isTheSame(new Circle(new Point(0,0), 4)));
+        assertFalse(abc.isTheSame(new Quadrilateral(new Point(0,0), new Point(1, 0), new Point(1,1), new Point(0, 1))));
+    }
+
+    private void testArea(final double expected, final double ax, final double ay, final double bx, final double by, final double cx, final double cy) {
+        final Triangle t = t(ax, ay, bx, by, cx, cy);
+        assertEquals("Error in area() on case " + t, expected, t.area(), 0.0001);
+    }
+
+    private void testCentroid(final double ax, final double ay, final double bx, final double by, final double cx, final double cy, final Point expected) {
+        final Triangle t = t(ax, ay, bx, by, cx, cy);
+        final Point centroid = t.centroid();
+        assertEquals("Error in centroid() on case (X) " + t, expected.getX(), centroid.getX(), 0.0001);
+        assertEquals("Error in centroid() on case (Y) " + t, expected.getY(), centroid.getY(), 0.0001);
+    }
+
+    private Triangle t(final double ax, final double ay, final double bx, final double by, final double cx, final double cy) {
+        return new Triangle(new Point(ax, ay), new Point(bx, by), new Point(cx, cy));
+    }
+
 
 }
