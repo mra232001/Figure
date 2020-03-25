@@ -139,12 +139,12 @@ public class FiguresTest {
 
         final Comparator<Figure> comparator = ComparatorsCollection::compareByHorizontalStartPosition;
 
-        testCaseMin(t2, Figure.class, comparator);
-        testCaseMax(q3, Figure.class, comparator);
+        testCaseMin(q1, Figure.class, comparator);
+        testCaseMax(c1, Figure.class, comparator);
         testCaseMin(c3, Circle.class, comparator);
-        testCaseMax(c2, Circle.class, comparator);
-        testCaseMin(t2, Triangle.class, comparator);
-        testCaseMax(t1, Triangle.class, comparator);
+        testCaseMax(c1, Circle.class, comparator);
+        testCaseMin(t1, Triangle.class, comparator);
+        testCaseMax(t3, Triangle.class, comparator);
         testCaseMin(q1, Quadrilateral.class, comparator);
         testCaseMax(q3, Quadrilateral.class, comparator);
     }
@@ -156,12 +156,12 @@ public class FiguresTest {
 
         final Comparator<Figure> comparator = ComparatorsCollection::compareByHorizontalCenterPosition;
 
-        testCaseMin(q1, Figure.class, comparator);
-        testCaseMax(c1, Figure.class, comparator);
+        testCaseMin(t2, Figure.class, comparator);
+        testCaseMax(q3, Figure.class, comparator);
         testCaseMin(c3, Circle.class, comparator);
-        testCaseMax(c1, Circle.class, comparator);
-        testCaseMin(t1, Triangle.class, comparator);
-        testCaseMax(t3, Triangle.class, comparator);
+        testCaseMax(c2, Circle.class, comparator);
+        testCaseMin(t2, Triangle.class, comparator);
+        testCaseMax(t1, Triangle.class, comparator);
         testCaseMin(q1, Quadrilateral.class, comparator);
         testCaseMax(q3, Quadrilateral.class, comparator);
     }
