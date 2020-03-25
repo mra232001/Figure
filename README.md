@@ -81,8 +81,8 @@ Implement methods in `ComparatorsCollection`:
 * `public static int compareByHorizontalStartPosition(Figure lhs, Figure rhs)`\
     You should return:
     * `0` - if figures leftmost points has equal horizontal coordinates
-    * `-1` - if `rhs` leftmost point lies to the right of the `lhs` leftmost point.   
-    * `1` - if `rhs` leftmost point lies to the left of the `lhs` leftmost point.   
+    * `-1` - if `rhs` leftmost point lies to the left of the `lhs` leftmost point.   
+    * `1` - if `rhs` leftmost point lies to the right of the `lhs` leftmost point.   
     
     *NB: remember that double calculations are not always accurate*
     
@@ -90,8 +90,8 @@ Implement methods in `ComparatorsCollection`:
 * `public static int compareByHorizontalCenterPosition(Figure lhs, Figure rhs)`\
     You should return:
     * `0` - if figures centroids has equal horizontal coordinates
-    * `-1` - if `rhs` centroid lies to the right of the `lhs` centroid.   
-    * `1` - if `rhs` centroid lies to the left of the `lhs` centroid.   
+    * `-1` - if `rhs` centroid lies to the left of the `lhs` centroid.   
+    * `1` - if `rhs` centroid lies to the right of the `lhs` centroid.   
     
     *NB: remember that double calculations are not always accurate*
     
